@@ -1,0 +1,47 @@
+<html>
+<head>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<nav class="navbar navbar-default navbar-static-top" >
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">AWS Project</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/">Upload images</a></li>
+                <li><a href="images">Original images</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <section id="section1" class="panel panel-default">
+
+        <div class="panel-heading">
+            <div class="container">
+                <h3 class="panel-title">Original images</h3>
+            </div>
+        </div>
+        <div class="panel-body">
+            <% links.forEach(function(link){ %>
+            <p>
+                <img src="<%= link %>" class="img-small img-thumbnail">
+
+                <a href="<%= link %>">
+                    <button class="btn btn-primary">Download</button>
+                </a>
+
+            </p>
+            <% }) %>
+        </div>
+        <footer class="panel-footer">
+
+        </footer>
+    </section>
+</div>
+</body>
+</html>

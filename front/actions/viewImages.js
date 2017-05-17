@@ -13,7 +13,7 @@ var task =  function(request, callback){
         Bucket: 'aws-lab-project1',
         // EncodingType: url,
         Marker: 'uploadedImages/',
-        MaxKeys: 10,
+        MaxKeys: 20,
         Prefix: 'uploadedImages/'
     };
 
@@ -23,12 +23,14 @@ var task =  function(request, callback){
             callback(err);
         }
         else {
-            console.log(data);
             var keys = _.map(data.Contents, 'Key');
-            console.log(keys);
-            callback(null, keys);
+            var links = _.map(keys, function (value) {
+                return "https://s3-us-west-2.amazonaws.com/aws-lab-project1/" + value;
+            });
+            console.log(links);
+            callback(null, {template: "images.ejs", params:{links: links}});
+            // callback(null, links);
         }
-
     });
 
 };
