@@ -27,16 +27,29 @@
             </div>
         </div>
         <div class="panel-body">
-            <% links.forEach(function(link){ %>
-            <p>
-                <img src="<%= link %>" class="img-small img-thumbnail">
+            <form action="/modify" method="POST">
 
-                <a href="<%= link %>">
-                    <button class="btn btn-primary">Download</button>
-                </a>
+                <label>
+                    Operation:
+                    <select name="option" >
+                        <option value="black">gray scale</option>
+                        <option value="flip">flip</option>
+                    </select>
+                </label>
+                <input type="submit" class="btn  btn-primary" value="Send"/>
 
-            </p>
-            <% }) %>
+
+                <% images.forEach(function(image){ %>
+                <p>
+                    <a href="<%= image.link %>">
+                        <img src="<%= image.link %>" class="img-small img-thumbnail">
+                    </a>
+                    <label>
+                        <input type="checkbox" name="keys" value="<%= image.key %>">
+                    </label>
+                </p>
+                <% }) %>
+            </form>
         </div>
         <footer class="panel-footer">
 

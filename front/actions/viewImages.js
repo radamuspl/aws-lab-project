@@ -9,11 +9,12 @@ var s3 = new AWS.S3();
 
 var task =  function(request, callback){
 
+    //TODO get bucket from config
+
     var params = {
         Bucket: 'aws-lab-project1',
-        // EncodingType: url,
         Marker: 'uploadedImages/',
-        MaxKeys: 20,
+        MaxKeys: 50,
         Prefix: 'uploadedImages/'
     };
 
@@ -23,13 +24,14 @@ var task =  function(request, callback){
             callback(err);
         }
         else {
-            var keys = _.map(data.Contents, 'Key');
-            var links = _.map(keys, function (value) {
-                return "https://s3-us-west-2.amazonaws.com/aws-lab-project1/" + value;
+            var imagesKeys = _.map(data.Contents, 'Key');
+            var images = _.map(imagesKeys, function (key) {
+                return {
+                    key: key,
+                    link: "https://s3-us-west-2.amazonaws.com/aws-lab-project1/" + key
+                }
             });
-            console.log(links);
-            callback(null, {template: "images.ejs", params:{links: links}});
-            // callback(null, links);
+            callback(null, {template: "images.ejs", params:{images: images}});
         }
     });
 
