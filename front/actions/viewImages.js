@@ -4,7 +4,7 @@
 var AWS = require("aws-sdk");
 var _ = require("lodash");
 
-AWS.config.loadFromPath('./config.json');
+AWS.config.loadFromPath('config/aws-config.json');
 var s3 = new AWS.S3();
 
 var task =  function(request, callback){

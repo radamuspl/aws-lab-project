@@ -1,8 +1,8 @@
 {	"expiration" : {"day":1},
 	"conditions": [ ["starts-with", "$key", "uploadedImages/"],
     				 {"bucket": "aws-lab-project1"},
-    				 {"acl": "private"},
-    				 {"success_action_redirect": "http://localhost:8080/s3digest"},
+    				 {"acl": "public-read"},
+    				 {"success_action_redirect": "https://s3-us-west-2.amazonaws.com/aws-lab-project1/uploadSuccessful.html"},
 						 {"x-amz-meta-Author": "Piotr K"},
     				 ["content-length-range", 0, 1048576]
     				]

@@ -2,10 +2,7 @@
  * Created by piotr on 17.05.17.
  */
 
-var AWS = require("aws-sdk");
-var _ = require("lodash");
 
-AWS.config.loadFromPath('./config.json');
 
 var task =  function(request, callback){
 

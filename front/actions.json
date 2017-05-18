@@ -1,6 +1,5 @@
 [
 	{"path":"/","action":"createform"},
-	{"path":"/s3digest","action":"s3digest"},
 	{"path":"/images", "action": "viewImages"},
 	{"path":"/modify", "action": "modifyImages"}
 ]

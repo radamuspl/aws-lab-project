@@ -2,7 +2,7 @@ var util = require("util");
 var helpers = require("../helpers");
 var Policy = require("../s3post").Policy;
 var S3Form = require("../s3post").S3Form;
-var AWS_CONFIG_FILE = "config.json";
+var AWS_CONFIG_FILE = "config/aws-config.json";
 var POLICY_FILE = "policy.json";
 var INDEX_TEMPLATE = "index.ejs";
 
@@ -20,9 +20,9 @@ var task = function(request, callback){
 	//4. get bucket name
 	var bucketname = policy.getConditionValueByKey("bucket");
 
-  var fields = s3Form.generateS3FormFields();
+	var fields = s3Form.generateS3FormFields();
 
-  fields = s3Form.addS3CredientalsFields(fields, awsConfig);
+	fields = s3Form.addS3CredientalsFields(fields, awsConfig);
 
 
 	callback(null, {template: INDEX_TEMPLATE, params:{fields:fields, bucket:bucketname}});
