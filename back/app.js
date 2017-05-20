@@ -15,71 +15,123 @@ var async = require("async");
 AWS.config.loadFromPath('aws-config.json');
 var sqs = new AWS.SQS();
 
+function run() {
+    async.waterfall([
+            function (cb) {
+                return receive(cb);
+            },
+            function (msgBody, cb) {
+                return validateMsgBody(msgBody, cb);
+            },
+            function (msgBody, cb) {
+                return validateIsImageExistingInBucket(msgBody, cb);
+            },
+            function (msgBody, cb) {
+                return convertImage(msgBody, cb);
+            },
+            function (convertedFileName, cb) {
+                return saveConvertedImageInBucket(convertedFileName, cb);
+            },
+            function (convertedFileName, cb) {
+                return deleteLocalConvertedFile(convertedFileName, cb);
+            }
+        ], function (err, result) {
+            if(err) {
+                console.log("ERROR: " + err);
+            } else {
+                console.log(result);
+                // Debug: Wait 30s to next polling msg
+                // sleep.msleep(10000);
+                // run();
+            }
+        }
+    );
+}
 
-function receive() {
+function receive(cb) {
     var params = {
         QueueUrl: 'https://sqs.us-west-2.amazonaws.com/894955361035/AWS-project',
         MaxNumberOfMessages: 1
     };
-
     sqs.receiveMessage(params, function(err, data) {
         if (err) {
             console.log(err, err.stack);
+            cb(err);
         }
         else {
             console.log(data);
             var msgBody = JSON.parse(data.Messages[0].Body);
-
-            // validate msg body
-            if(!msgBody.hasOwnProperty("option") || !msgBody.hasOwnProperty("key")) {
-                console.log("ERROR: invalid msg body")
-            }
-
-            // validate options
-            if(msgBody.option !== "grayScale") {
-                console.log("ERROR: invalid option");
-            }
-
-            // construct link
-            var imageLink = encodeURI("https://s3-us-west-2.amazonaws.com/aws-lab-project1/" + msgBody.key);
-            console.log(imageLink);
-
-            //TODO validate is key exist in bucket
-
-            //convert image
-            convert(imageLink);
-
-            //TODO save converted image to bucket
-
-            // delete local copy of converted file
-            // del.sync([convertedFileName]);
-            //
-            // console.log("file deleted");
-
+            cb(null, msgBody);
         }
     });
 }
 
-function convert(imageLink) {
+function validateMsgBody(msgBody, cb) {
+    if(!msgBody.hasOwnProperty("option") || !msgBody.hasOwnProperty("key")) {
+        return cb("invalid msg body");
+    }
+
+    // TODO move this array
+    var viableOptions = ["grayScale", "invert"];
+
+    if(!_.includes(viableOptions, msgBody.option)) {
+        return cb("invalid option");
+    }
+    return cb(null, msgBody);
+}
+
+function validateIsImageExistingInBucket(msgBody, cb) {
+    // TODO implement
+    return cb(null, msgBody)
+}
+
+function convertImage(msgBody, cb) {
+    var imageLink = constructLink(msgBody.key);
 
     jimp.read(imageLink, function (err, image) {
         if (err) {
-            throw err;
-            // TODO return callback with error
+            return cb(err);
         }
 
-        // TODO save with good extenstion
-
+        // TODO save with good extension
         var convertedFileName =  moment() + ".jpg";
 
-        image.greyscale()
-            .write(convertedFileName);
+        switch (msgBody.option) {
+            case "grayScale":
+                image.greyscale();
+                break;
+            case "invert":
+                image.invert();
+                break;
+            default:
+                console.log("Case " + msgBody.operation + " doesn't exist");
+        }
+        image.write(convertedFileName);
 
-        console.log("file converted");
-
+        console.log("File converted");
+        return cb(null, convertedFileName);
     })
 }
 
-//convert("https://s3-us-west-2.amazonaws.com/aws-lab-project1/uploadedImages/bird-sample1.jpeg");
-receive();
+function saveConvertedImageInBucket(convertedFileName, cb) {
+    // TODO implement
+    cb(null, convertedFileName);
+}
+
+function deleteLocalConvertedFile(convertedFileName, cb) {
+    del([convertedFileName], function(err, deleted) {
+        if (err) {
+            return cb(err);
+        }
+        return cb(null, "File deleted: " + deleted);
+    });
+}
+
+// utils function
+function constructLink(key) {
+    return  encodeURI("https://s3-us-west-2.amazonaws.com/aws-lab-project1/" + key);
+}
+
+run();
+
 
