@@ -51,3 +51,5 @@ fabric.properties
 /front/config/aws-config.json
 .idea/
 /front/deploy.sh
+/back/node_modules/
+/back/aws-config.json
