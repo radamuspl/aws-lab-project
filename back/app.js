@@ -11,16 +11,23 @@ var _ = require("lodash");
 var moment = require("moment");
 var del = require("delete");
 var async = require("async");
+var fs = require("fs");
+var path  = require("path");
 
 AWS.config.loadFromPath('aws-config.json');
 var sqs = new AWS.SQS();
+var s3 = new AWS.S3();
 
 function run() {
+    var receiptHandleMsg;
+
     async.waterfall([
             function (cb) {
                 return receive(cb);
             },
-            function (msgBody, cb) {
+            function (msgBody, receiptHandle, cb) {
+                // save in var to not pass through whole waterfall
+                receiptHandleMsg = receiptHandle;
                 return validateMsgBody(msgBody, cb);
             },
             function (msgBody, cb) {
@@ -34,6 +41,9 @@ function run() {
             },
             function (convertedFileName, cb) {
                 return deleteLocalConvertedFile(convertedFileName, cb);
+            },
+            function (cb) {
+                return deleteMsgFromQueue(receiptHandleMsg, cb);
             }
         ], function (err, result) {
             if(err) {
@@ -61,7 +71,8 @@ function receive(cb) {
         else {
             console.log(data);
             var msgBody = JSON.parse(data.Messages[0].Body);
-            cb(null, msgBody);
+            var receiptHandle = data.Messages[0].ReceiptHandle;
+            cb(null, msgBody, receiptHandle);
         }
     });
 }
@@ -114,8 +125,31 @@ function convertImage(msgBody, cb) {
 }
 
 function saveConvertedImageInBucket(convertedFileName, cb) {
-    // TODO implement
-    cb(null, convertedFileName);
+
+    var fileStream = fs.createReadStream(path.join( __dirname, convertedFileName));
+
+    var params = {
+        Bucket: 'aws-lab-project1',
+        Key: "convertedImages/" + convertedFileName,
+        ACL: "public-read",
+        Body: fileStream
+    };
+
+    fileStream.on('error', function (err) {
+        if (err) { return cb(err); }
+    });
+    fileStream.on('open', function () {
+        s3.putObject(params, function(err, data) {
+            if (err) {
+                console.log(err, err.stack);
+                return cb(err);
+            }
+            else {
+                console.log("Image saved in bucket");
+                return cb(null, convertedFileName);
+            }
+        });
+    });
 }
 
 function deleteLocalConvertedFile(convertedFileName, cb) {
@@ -123,11 +157,17 @@ function deleteLocalConvertedFile(convertedFileName, cb) {
         if (err) {
             return cb(err);
         }
-        return cb(null, "File deleted: " + deleted);
+        console.log("File deleted: " + deleted);
+        return cb();
     });
 }
 
-// utils function
+function deleteMsgFromQueue(receiptHandleMsg, cb) {
+    // TODO implement
+    return cb(null, "Whole job successfully done");
+}
+
+// util function
 function constructLink(key) {
     return  encodeURI("https://s3-us-west-2.amazonaws.com/aws-lab-project1/" + key);
 }
