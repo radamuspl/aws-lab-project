@@ -49,17 +49,23 @@ function run() {
         ], function (err, result) {
             if(err) {
                 console.log("ERROR: " + err);
+                run();
             } else {
                 console.log("Whole job successfully done");
+
                 // Debug: Wait 30s to next polling msg
-                // sleep.msleep(10000);
-                // run();
+                // sleep.msleep(30000);
+                run();
             }
         }
     );
 }
 
 function receive(cb) {
+
+    console.log("Start polling");
+
+    // Long polling (20s) set for whole queue - not for every msg
     var params = {
         QueueUrl: queueUrl,
         MaxNumberOfMessages: 1
@@ -67,14 +73,17 @@ function receive(cb) {
     sqs.receiveMessage(params, function(err, data) {
         if (err) {
             console.log(err, err.stack);
-            cb(err);
+            return cb(err);
         }
         else {
-            // console.log(data);
+            if(!data.hasOwnProperty("Messages")) {
+                return cb("any msg to poll");
+            }
+
             console.log("Msg received");
             var msgBody = JSON.parse(data.Messages[0].Body);
             var receiptHandle = data.Messages[0].ReceiptHandle;
-            cb(null, msgBody, receiptHandle);
+            return cb(null, msgBody, receiptHandle);
         }
     });
 }
