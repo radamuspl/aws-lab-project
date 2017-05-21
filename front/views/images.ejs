@@ -3,21 +3,17 @@
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $("#navbar").load("navbar.html");
+        });
+    </script>
 </head>
 <body>
-<nav class="navbar navbar-default navbar-static-top" >
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/">AWS Project</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="/">Upload image</a></li>
-                <li><a href="images">Original images</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+
+<div id="navbar"></div>
+
 <div class="container">
     <section id="section1" class="panel panel-default">
 
@@ -32,8 +28,8 @@
                 <label>
                     Operation:
                     <select name="option" >
-                        <option value="greyScale">gray scale</option>
-                        <option value="flip">flip</option>
+                        <option value="greyScale">grey scale</option>
+                        <option value="invert">invert</option>
                     </select>
                 </label>
                 <input type="submit" class="btn  btn-primary" value="Send"/>

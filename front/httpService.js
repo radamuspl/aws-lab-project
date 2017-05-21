@@ -24,7 +24,7 @@ var service = function(requestProcessors){
         limit: 5242880,
         defer: true
     }));
-    app.use(express.static("assets", {maxAge: 31557600000}));
+    app.use(express.static("public", {maxAge: 31557600000}));
 
     var handlers = {};
     for(var i = 0; i < requestProcessors.length; i ++){
