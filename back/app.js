@@ -15,8 +15,12 @@ var fs = require("fs");
 var path  = require("path");
 
 AWS.config.loadFromPath('aws-config.json');
+
 var sqs = new AWS.SQS();
 var s3 = new AWS.S3();
+
+var queueUrl = "https://sqs.us-west-2.amazonaws.com/894955361035/AWS-project";
+var bucketName = "aws-lab-project1";
 
 function run() {
     var receiptHandleMsg;
@@ -29,9 +33,6 @@ function run() {
                 // save in var to not pass through whole waterfall
                 receiptHandleMsg = receiptHandle;
                 return validateMsgBody(msgBody, cb);
-            },
-            function (msgBody, cb) {
-                return validateIsImageExistingInBucket(msgBody, cb);
             },
             function (msgBody, cb) {
                 return convertImage(msgBody, cb);
@@ -49,7 +50,7 @@ function run() {
             if(err) {
                 console.log("ERROR: " + err);
             } else {
-                console.log(result);
+                console.log("Whole job successfully done");
                 // Debug: Wait 30s to next polling msg
                 // sleep.msleep(10000);
                 // run();
@@ -60,7 +61,7 @@ function run() {
 
 function receive(cb) {
     var params = {
-        QueueUrl: 'https://sqs.us-west-2.amazonaws.com/894955361035/AWS-project',
+        QueueUrl: queueUrl,
         MaxNumberOfMessages: 1
     };
     sqs.receiveMessage(params, function(err, data) {
@@ -69,7 +70,8 @@ function receive(cb) {
             cb(err);
         }
         else {
-            console.log(data);
+            // console.log(data);
+            console.log("Msg received");
             var msgBody = JSON.parse(data.Messages[0].Body);
             var receiptHandle = data.Messages[0].ReceiptHandle;
             cb(null, msgBody, receiptHandle);
@@ -89,11 +91,6 @@ function validateMsgBody(msgBody, cb) {
         return cb("invalid option");
     }
     return cb(null, msgBody);
-}
-
-function validateIsImageExistingInBucket(msgBody, cb) {
-    // TODO implement
-    return cb(null, msgBody)
 }
 
 function convertImage(msgBody, cb) {
@@ -129,7 +126,7 @@ function saveConvertedImageInBucket(convertedFileName, cb) {
     var fileStream = fs.createReadStream(path.join( __dirname, convertedFileName));
 
     var params = {
-        Bucket: 'aws-lab-project1',
+        Bucket: bucketName,
         Key: "convertedImages/" + convertedFileName,
         ACL: "public-read",
         Body: fileStream
@@ -163,13 +160,29 @@ function deleteLocalConvertedFile(convertedFileName, cb) {
 }
 
 function deleteMsgFromQueue(receiptHandleMsg, cb) {
-    // TODO implement
-    return cb(null, "Whole job successfully done");
+
+    //TODO delete (debug only)
+    // return cb(null, "Whole job successfully done");
+
+    var params = {
+        QueueUrl: queueUrl,
+        ReceiptHandle: receiptHandleMsg
+    };
+    sqs.deleteMessage(params, function(err, data) {
+        if (err) {
+            console.log(err, err.stack);
+            return cb(err);
+        }
+        else {
+            console.log("Msg deleted from queue");
+            return cb();
+        }
+    });
 }
 
 // util function
 function constructLink(key) {
-    return  encodeURI("https://s3-us-west-2.amazonaws.com/aws-lab-project1/" + key);
+    return  encodeURI("https://s3-us-west-2.amazonaws.com/" + bucketName + "/" + key);
 }
 
 run();
