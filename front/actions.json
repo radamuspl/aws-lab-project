@@ -1,5 +1,6 @@
 [
 	{"path":"/","action":"createform"},
-	{"path":"/images", "action": "viewImages"},
-	{"path":"/modify", "action": "modifyImages"}
+	{"path":"/images", "action": "getOriginalImages"},
+	{"path":"/modify", "action": "modifyImages"},
+	{"path":"/convertedImages", "action": "getConvertedImages"}
 ]

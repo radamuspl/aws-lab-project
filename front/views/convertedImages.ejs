@@ -19,33 +19,16 @@
 
         <div class="panel-heading">
             <div class="container">
-                <h3 class="panel-title">Original images</h3>
+                <h3 class="panel-title">Converted images</h3>
             </div>
         </div>
         <div class="panel-body">
-            <form action="/modify" method="POST">
-
-                <div style="margin-bottom: 20px">
-                    <label>
-                        Operation:
-                        <select name="option" >
-                            <option value="greyScale">grey scale</option>
-                            <option value="invert">invert</option>
-                        </select>
-                    </label>
-                    <input type="submit" class="btn  btn-primary" value="Send"/>
-                </div>
 
                 <% images.forEach(function(image){ %>
-                <label>
-                    <input type="checkbox" name="keys" value="<%= image.key %>">
-                </label>
-                <a href="<%= image.link %>">
-                    <img src="<%= image.link %>" class="img-small img-thumbnail">
-                </a>
+                    <a href="<%= image.link %>">
+                        <img src="<%= image.link %>" class="img-small img-thumbnail">
+                    </a>
                 <% }) %>
-
-            </form>
         </div>
         <footer class="panel-footer">
 
