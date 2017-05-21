@@ -21,6 +21,7 @@ var s3 = new AWS.S3();
 
 var queueUrl = "https://sqs.us-west-2.amazonaws.com/894955361035/AWS-project";
 var bucketName = "aws-lab-project1";
+var viableOptions = ["greyScale", "invert"];
 
 function run() {
     var receiptHandleMsg;
@@ -49,14 +50,12 @@ function run() {
         ], function (err, result) {
             if(err) {
                 console.log("ERROR: " + err);
-                run();
             } else {
                 console.log("Whole job successfully done");
-
-                // Debug: Wait 30s to next polling msg
-                // sleep.msleep(30000);
-                run();
             }
+            // Debug: Wait 30s to next polling msg
+            // sleep.msleep(30000);
+            run();
         }
     );
 }
@@ -93,9 +92,6 @@ function validateMsgBody(msgBody, cb) {
         return cb("invalid msg body");
     }
 
-    // TODO move this array
-    var viableOptions = ["grayScale", "invert"];
-
     if(!_.includes(viableOptions, msgBody.option)) {
         return cb("invalid option");
     }
@@ -114,7 +110,7 @@ function convertImage(msgBody, cb) {
         var convertedFileName =  moment() + ".jpg";
 
         switch (msgBody.option) {
-            case "grayScale":
+            case "greyScale":
                 image.greyscale();
                 break;
             case "invert":
