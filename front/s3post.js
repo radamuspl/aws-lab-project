@@ -51,7 +51,7 @@ S3Form.prototype.generateS3FormFields = function() {
 	conditions.forEach(function(elem){
 		if(Array.isArray(elem)){
 			if(elem[1] === "$key")
-				formFields.push(hiddenField("key", elem[2] + "${filename}"));			
+				formFields.push(hiddenField("key", elem[2] + moment() + "${filename}"));
 		}else {
 
 			var key = Object.keys(elem)[0];
