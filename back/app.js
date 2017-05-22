@@ -106,9 +106,8 @@ function convertImage(msgBody, cb) {
             return cb(err);
         }
 
-        // TODO save with good extension
-        var convertedFileName =  moment() + ".jpg";
-
+        var extension = imageLink.split('.').pop();
+        var convertedFileName =  moment() + "." + extension;
         switch (msgBody.option) {
             case "greyScale":
                 image.greyscale();
