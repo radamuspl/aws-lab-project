@@ -22,7 +22,7 @@ var task =  function(request, callback){
     s3.listObjects(params, function(err, data) {
         if (err) {
             console.log(err, err.stack);
-            callback(err);
+            return callback(err);
         }
         else {
             var imagesKeys = _.map(data.Contents, 'Key');
@@ -32,7 +32,7 @@ var task =  function(request, callback){
                     link: "https://s3-us-west-2.amazonaws.com/aws-lab-project1/" + key
                 }
             });
-            callback(null, {template: "convertedImages.ejs", params:{images: images}});
+            return callback(null, {template: "convertedImages.ejs", params:{images: images}});
         }
     });
 
