@@ -37,12 +37,16 @@
                 </div>
 
                 <% images.forEach(function(image){ %>
-                <label>
-                    <input type="checkbox" name="keys" value="<%= image.key %>">
-                </label>
-                <a href="<%= image.link %>">
-                    <img src="<%= image.link %>" class="img-small img-thumbnail">
-                </a>
+                <div class="img-container">
+
+                    <a href="<%= image.link %>">
+                        <img src="<%= image.link %>" class="img-small img-thumbnail">
+                    </a>
+                    <label >
+                        <input type="checkbox" name="keys" value="<%= image.key %>">
+                    </label>
+                </div>
+
                 <% }) %>
 
             </form>
