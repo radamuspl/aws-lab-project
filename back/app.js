@@ -55,7 +55,7 @@ function run() {
             }
             // Debug: Wait 30s to next polling msg
             // sleep.msleep(30000);
-            run();
+            return run();
         }
     );
 }
@@ -108,6 +108,7 @@ function convertImage(msgBody, cb) {
 
         var extension = imageLink.split('.').pop();
         var convertedFileName =  moment() + "." + extension;
+
         switch (msgBody.option) {
             case "greyScale":
                 image.greyscale();
@@ -118,10 +119,13 @@ function convertImage(msgBody, cb) {
             default:
                 console.log("Case " + msgBody.operation + " doesn't exist");
         }
-        image.write(convertedFileName);
-
         console.log("File converted");
-        return cb(null, convertedFileName);
+
+        image.write(convertedFileName, function () {
+            console.log("File Saved");
+            return cb(null, convertedFileName);
+        });
+
     })
 }
 
