@@ -23,8 +23,8 @@ var queueUrl = "https://sqs.us-west-2.amazonaws.com/894955361035/AWS-project";
 var bucketName = "aws-lab-project1";
 var viableOptions = ["greyScale", "invert"];
 
-// Commented to test scaling
-//run();
+// Comment to not run app
+run();
 
 function run() {
     var receiptHandleMsg;
