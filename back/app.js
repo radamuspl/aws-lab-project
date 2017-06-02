@@ -23,6 +23,9 @@ var queueUrl = "https://sqs.us-west-2.amazonaws.com/894955361035/AWS-project";
 var bucketName = "aws-lab-project1";
 var viableOptions = ["greyScale", "invert"];
 
+// Commented to test scaling
+//run();
+
 function run() {
     var receiptHandleMsg;
 
@@ -193,6 +196,6 @@ function constructLink(key) {
     return  encodeURI("https://s3-us-west-2.amazonaws.com/" + bucketName + "/" + key);
 }
 
-run();
+
 
 
